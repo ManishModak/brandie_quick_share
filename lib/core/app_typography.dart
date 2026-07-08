@@ -37,6 +37,74 @@ abstract final class AppTypography {
     height: 18 / 12,
   );
 
+  static const TextStyle topActionLabel = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 10,
+    fontWeight: FontWeight.w500,
+    height: 15 / 10,
+    color: AppColors.topActionLabel,
+  );
+
+  static const TextStyle aiBadge = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 8,
+    fontWeight: FontWeight.w700,
+    fontStyle: FontStyle.italic,
+    height: 1,
+    color: AppColors.white,
+  );
+
+  static const TextStyle readyPill = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w700,
+    fontStyle: FontStyle.italic,
+    height: 1,
+    color: AppColors.white,
+  );
+
+  static const TextStyle wordmark = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
+    height: 18 / 16,
+    letterSpacing: 4,
+    color: AppColors.wordmark,
+  );
+
+  static const TextStyle wordmarkCountry = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 6,
+    fontWeight: FontWeight.w500,
+    height: 8 / 6,
+    letterSpacing: 3,
+    color: AppColors.wordmark,
+  );
+
+  static const TextStyle seeMore = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    height: 17 / 12,
+    color: AppColors.seeMoreText,
+  );
+
+  static const TextStyle editCaptionAction = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    height: 21 / 14,
+    color: AppColors.white,
+  );
+
+  static const TextStyle businessBadge = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 8,
+    fontWeight: FontWeight.w700,
+    height: 1,
+    color: AppColors.white,
+  );
+
   static const TextStyle counter = TextStyle(
     fontFamily: fontFamily,
     fontSize: 10,

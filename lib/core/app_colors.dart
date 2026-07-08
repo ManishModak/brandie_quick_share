@@ -13,6 +13,9 @@ abstract final class AppColors {
   /// Active Tag/Text purple used for active tag text.
   static const Color tagPurple = Color(0xFF6834AC);
 
+  /// End color for the ready-to-share gradient pill.
+  static const Color tagPink = Color(0xFFE45AA8);
+
   /// Inactive Category Text used by inactive navigation tabs.
   static const Color inactiveText = Color(0xFF595959);
 
@@ -57,6 +60,12 @@ abstract final class AppColors {
 
   /// Dark circular action button background in the top bar.
   static const Color darkButton = Color(0xFF262928);
+
+  /// Text color used for small top action labels.
+  static const Color topActionLabel = Color(0xFF8A909A);
+
+  /// Dark text used by the ORIFLAME wordmark stand-in.
+  static const Color wordmark = Color(0xFF2F343B);
 
   /// Assistant AI badge background.
   static const Color aiBadge = Color(0xFF7EC086);

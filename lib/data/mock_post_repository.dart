@@ -5,6 +5,8 @@ import '../domain/domain.dart';
 import 'post_repository.dart';
 
 class MockPostRepository implements PostRepository {
+  const MockPostRepository();
+
   static const _referral = ReferralDetails();
 
   static const _product = ProductInfo(
@@ -58,6 +60,7 @@ class MockPostRepository implements PostRepository {
       label: 'Instagram Post',
       kind: PlatformKind.post,
       brandColor: _color(const Color(0xFFE4405F)),
+      iconAsset: 'assets/icons/brand_instagram.svg',
       splash: const SplashBranding(appName: 'Instagram', showFromMeta: true),
     ),
     SharePlatform(
@@ -65,6 +68,7 @@ class MockPostRepository implements PostRepository {
       label: 'Instagram Story',
       kind: PlatformKind.story,
       brandColor: _color(const Color(0xFFE4405F)),
+      iconAsset: 'assets/icons/brand_instagram.svg',
       storyBorderColor: _color(AppColors.instagramStoryBorder),
       splash: const SplashBranding(appName: 'Instagram', showFromMeta: true),
     ),
@@ -73,6 +77,7 @@ class MockPostRepository implements PostRepository {
       label: 'Facebook Post',
       kind: PlatformKind.post,
       brandColor: _color(const Color(0xFF1877F2)),
+      iconAsset: 'assets/icons/brand_facebook.svg',
       splash: const SplashBranding(appName: 'Facebook', showFromMeta: true),
     ),
     SharePlatform(
@@ -80,6 +85,7 @@ class MockPostRepository implements PostRepository {
       label: 'Facebook Story',
       kind: PlatformKind.story,
       brandColor: _color(const Color(0xFF1877F2)),
+      iconAsset: 'assets/icons/brand_facebook.svg',
       storyBorderColor: _color(AppColors.facebookStoryBorder),
       splash: const SplashBranding(appName: 'Facebook', showFromMeta: true),
     ),
@@ -88,6 +94,7 @@ class MockPostRepository implements PostRepository {
       label: 'TikTok',
       kind: PlatformKind.post,
       brandColor: _color(const Color(0xFF111111)),
+      iconAsset: 'assets/icons/brand_tiktok.svg',
       splash: const SplashBranding(appName: 'TikTok', showFromMeta: false),
     ),
     SharePlatform(
@@ -95,6 +102,7 @@ class MockPostRepository implements PostRepository {
       label: 'WhatsApp',
       kind: PlatformKind.post,
       brandColor: _color(const Color(0xFF25D366)),
+      iconAsset: 'assets/icons/brand_whatsapp.svg',
       splash: const SplashBranding(appName: 'WhatsApp', showFromMeta: false),
     ),
     SharePlatform(
@@ -102,6 +110,8 @@ class MockPostRepository implements PostRepository {
       label: 'WhatsApp Business',
       kind: PlatformKind.post,
       brandColor: _color(const Color(0xFF128C7E)),
+      iconAsset: 'assets/icons/brand_whatsapp.svg',
+      businessBadge: true,
       splash: const SplashBranding(
         appName: 'WhatsApp Business',
         showFromMeta: false,
@@ -112,6 +122,7 @@ class MockPostRepository implements PostRepository {
       label: 'Telegram',
       kind: PlatformKind.post,
       brandColor: _color(const Color(0xFF229ED9)),
+      iconAsset: 'assets/icons/brand_telegram.svg',
       splash: const SplashBranding(appName: 'Telegram', showFromMeta: false),
     ),
     SharePlatform(
@@ -119,6 +130,7 @@ class MockPostRepository implements PostRepository {
       label: 'Mail',
       kind: PlatformKind.post,
       brandColor: _color(const Color(0xFF5E6AD2)),
+      useEnvelopeIcon: true,
       splash: const SplashBranding(appName: 'Mail', showFromMeta: false),
     ),
     SharePlatform(
@@ -126,6 +138,7 @@ class MockPostRepository implements PostRepository {
       label: 'Messenger',
       kind: PlatformKind.post,
       brandColor: _color(const Color(0xFF00B2FF)),
+      iconAsset: 'assets/icons/brand_messenger.svg',
       splash: const SplashBranding(appName: 'Messenger', showFromMeta: true),
     ),
   ];
