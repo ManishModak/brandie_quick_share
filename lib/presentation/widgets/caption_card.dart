@@ -20,6 +20,12 @@ class CaptionCard extends StatelessWidget {
     return ListenableBuilder(
       listenable: controller,
       builder: (context, child) {
+        final maxCaptionHeight = controller.isExpanded
+            ? AppDimens.productTextHeight +
+                  AppDimens.quickShareHeight +
+                  AppDimens.productCardGap
+            : AppDimens.productTextHeight;
+
         return AnimatedSize(
           duration: const Duration(milliseconds: AppDimens.fastAnimationMs),
           curve: Curves.easeInOut,
@@ -38,21 +44,27 @@ class CaptionCard extends StatelessWidget {
                 GestureDetector(
                   onTap: onEdit,
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(
+                    constraints: BoxConstraints(
                       minHeight: AppDimens.productTextHeight,
+                      maxHeight: maxCaptionHeight,
                     ),
-                    child: Text(
-                      controller.originalText,
-                      maxLines: controller.isExpanded
-                          ? null
-                          : AppDimens.captionMaxLines,
-                      overflow: controller.isExpanded
-                          ? TextOverflow.visible
-                          : TextOverflow.ellipsis,
-                      style: AppTypography.body.copyWith(
-                        color: AppColors.white,
-                      ),
-                    ),
+                    child: controller.isExpanded
+                        ? SingleChildScrollView(
+                            child: Text(
+                              controller.originalText,
+                              style: AppTypography.body.copyWith(
+                                color: AppColors.white,
+                              ),
+                            ),
+                          )
+                        : Text(
+                            controller.originalText,
+                            maxLines: AppDimens.captionMaxLines,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.body.copyWith(
+                              color: AppColors.white,
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: AppDimens.productCardGap),

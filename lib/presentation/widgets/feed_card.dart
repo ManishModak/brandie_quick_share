@@ -78,6 +78,7 @@ class FeedCard extends StatelessWidget {
           right: AppDimens.horizontalPadding,
           bottom: AppDimens.bottomStackBottom,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               MusicBar(music: post.music),
               const SizedBox(height: AppDimens.productCardGap),

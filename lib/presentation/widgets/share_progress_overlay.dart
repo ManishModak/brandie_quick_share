@@ -28,11 +28,39 @@ class _ShareProgressOverlayState extends State<ShareProgressOverlay>
     _spinnerController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: AppDimens.shareSpinnerSeconds),
-    )..repeat();
+    );
+    widget.controller.addListener(_syncSpinnerWithPhase);
+    _syncSpinnerWithPhase();
+  }
+
+  @override
+  void didUpdateWidget(covariant ShareProgressOverlay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller == widget.controller) {
+      return;
+    }
+    oldWidget.controller.removeListener(_syncSpinnerWithPhase);
+    widget.controller.addListener(_syncSpinnerWithPhase);
+    _syncSpinnerWithPhase();
+  }
+
+  void _syncSpinnerWithPhase() {
+    if (widget.controller.phase == ShareFlowPhase.generating) {
+      if (!_spinnerController.isAnimating) {
+        _spinnerController.repeat();
+      }
+      return;
+    }
+
+    if (_spinnerController.isAnimating) {
+      _spinnerController.stop();
+    }
+    _spinnerController.reset();
   }
 
   @override
   void dispose() {
+    widget.controller.removeListener(_syncSpinnerWithPhase);
     _spinnerController.dispose();
     super.dispose();
   }
