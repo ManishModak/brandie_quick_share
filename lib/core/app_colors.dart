@@ -37,6 +37,12 @@ abstract final class AppColors {
   /// Blurred Background Rectangle used over the active card during generation.
   static const Color blurredOverlay = Color.fromRGBO(77, 75, 62, 0.64);
 
+  /// Product overlay glass card background.
+  static const Color productOverlay = Color.fromRGBO(49, 49, 49, 0.56);
+
+  /// Loading dialog status text.
+  static const Color loadingStatusText = Color(0xFFB1B1B1);
+
   /// Checklist dark theme background.
   static const Color checklistBackground = Color(0xFF121315);
 

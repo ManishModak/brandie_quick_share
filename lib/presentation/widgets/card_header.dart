@@ -54,9 +54,13 @@ class CardHeader extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(AppDimens.headerTagRadius),
               ),
-              child: const Text(
-                '✦ Ready to share',
-                style: AppTypography.readyPill,
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.auto_awesome, size: 10, color: AppColors.white),
+                  SizedBox(width: AppDimens.editCaptionIconGap),
+                  Text('Ready to share', style: AppTypography.readyPill),
+                ],
               ),
             ),
             const SizedBox(height: AppDimens.cardInfoGap),

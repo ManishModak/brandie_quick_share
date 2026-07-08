@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/app_theme.dart';
-import 'presentation/screens/quick_share_screen.dart';
+import 'presentation/screens/smart_post_checklist_screen.dart';
 
 void main() {
   runApp(const BrandieQuickShareApp());
@@ -16,7 +16,7 @@ class BrandieQuickShareApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Brandie Quick Share',
       theme: AppTheme.light,
-      home: const QuickShareScreen(),
+      home: const SmartPostChecklistScreen(),
     );
   }
 }

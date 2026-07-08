@@ -126,4 +126,60 @@ abstract final class AppTypography {
     fontSize: 16,
     fontWeight: FontWeight.w700,
   );
+
+  static const TextStyle productOverlayTitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w700,
+    height: 17 / 12,
+    color: AppColors.white,
+  );
+
+  static const TextStyle productOverlayPrice = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    height: 17 / 12,
+    color: AppColors.white,
+  );
+
+  static const TextStyle productOverlayBadge = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 10,
+    fontWeight: FontWeight.w700,
+    height: 15 / 10,
+    color: AppColors.white,
+  );
+
+  static const TextStyle loadingStatus = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w700,
+    height: 19 / 13,
+    color: AppColors.loadingStatusText,
+  );
+
+  static const TextStyle checklistRow = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 20 / 14,
+    color: AppColors.checklistPendingText,
+  );
+
+  static const TextStyle checklistFooter = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 20 / 14,
+    color: AppColors.checklistGreen,
+  );
+
+  static const TextStyle splashMeta = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 11,
+    fontWeight: FontWeight.w400,
+    height: 15 / 11,
+    color: AppColors.topActionLabel,
+  );
 }

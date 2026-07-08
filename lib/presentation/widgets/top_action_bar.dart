@@ -6,14 +6,16 @@ import '../../core/app_dimens.dart';
 import '../../core/app_typography.dart';
 
 class TopActionBar extends StatelessWidget {
-  const TopActionBar({super.key});
+  const TopActionBar({super.key, this.onAssistantTap});
+
+  final VoidCallback? onAssistantTap;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: AppDimens.topActionsHeight,
       child: Stack(
-        children: const [
+        children: [
           Positioned(
             left: AppDimens.horizontalPadding,
             bottom: AppDimens.topActionBottom,
@@ -21,9 +23,10 @@ class TopActionBar extends StatelessWidget {
               iconAsset: 'assets/icons/profile.svg',
               label: 'Your Assistant',
               showAiBadge: true,
+              onTap: onAssistantTap,
             ),
           ),
-          Positioned(
+          const Positioned(
             right: AppDimens.horizontalPadding,
             bottom: AppDimens.topActionBottom,
             child: _TopAction(
@@ -31,7 +34,7 @@ class TopActionBar extends StatelessWidget {
               label: 'Camera',
             ),
           ),
-          Positioned.fill(child: _Wordmark()),
+          const Positioned.fill(child: _Wordmark()),
         ],
       ),
     );
@@ -43,58 +46,63 @@ class _TopAction extends StatelessWidget {
     required this.iconAsset,
     required this.label,
     this.showAiBadge = false,
+    this.onTap,
   });
 
   final String iconAsset;
   final String label;
   final bool showAiBadge;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              width: AppDimens.topActionButton,
-              height: AppDimens.topActionButton,
-              decoration: const BoxDecoration(
-                color: AppColors.darkButton,
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                iconAsset,
-                width: AppDimens.topActionIcon,
-                height: AppDimens.topActionIcon,
-                colorFilter: const ColorFilter.mode(
-                  AppColors.white,
-                  BlendMode.srcIn,
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: AppDimens.topActionButton,
+                height: AppDimens.topActionButton,
+                decoration: const BoxDecoration(
+                  color: AppColors.darkButton,
+                  shape: BoxShape.circle,
                 ),
-              ),
-            ),
-            if (showAiBadge)
-              Positioned(
-                right: AppDimens.badgeOffset,
-                bottom: AppDimens.badgeOffset,
-                child: Container(
-                  width: AppDimens.topActionBadge,
-                  height: AppDimens.topActionBadge,
-                  alignment: Alignment.center,
-                  decoration: const BoxDecoration(
-                    color: AppColors.aiBadge,
-                    shape: BoxShape.circle,
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  iconAsset,
+                  width: AppDimens.topActionIcon,
+                  height: AppDimens.topActionIcon,
+                  colorFilter: const ColorFilter.mode(
+                    AppColors.white,
+                    BlendMode.srcIn,
                   ),
-                  child: const Text('AI', style: AppTypography.aiBadge),
                 ),
               ),
-          ],
-        ),
-        const SizedBox(height: AppDimens.topActionLabelTop),
-        Text(label, style: AppTypography.topActionLabel),
-      ],
+              if (showAiBadge)
+                Positioned(
+                  right: AppDimens.badgeOffset,
+                  bottom: AppDimens.badgeOffset,
+                  child: Container(
+                    width: AppDimens.topActionBadge,
+                    height: AppDimens.topActionBadge,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                      color: AppColors.aiBadge,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Text('AI', style: AppTypography.aiBadge),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: AppDimens.topActionLabelTop),
+          Text(label, style: AppTypography.topActionLabel),
+        ],
+      ),
     );
   }
 }

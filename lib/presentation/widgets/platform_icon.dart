@@ -7,51 +7,66 @@ import '../../core/app_typography.dart';
 import '../../domain/domain.dart';
 
 class PlatformIcon extends StatelessWidget {
-  const PlatformIcon({super.key, required this.platform});
+  const PlatformIcon({super.key, required this.platform, this.onTap});
 
   final SharePlatform platform;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     if (platform.kind == PlatformKind.story) {
-      return Container(
-        width: AppDimens.shareEllipse,
-        height: AppDimens.shareEllipse,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: Color(platform.storyBorderColor!),
-            width: AppDimens.storyBorderWidth,
+      return Semantics(
+        label: platform.label,
+        button: true,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: AppDimens.shareEllipse,
+            height: AppDimens.shareEllipse,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Color(platform.storyBorderColor!),
+                width: AppDimens.storyBorderWidth,
+              ),
+            ),
+            child: _IconCircle(
+              platform: platform,
+              size: AppDimens.shareInnerEllipse,
+            ),
           ),
-        ),
-        child: _IconCircle(
-          platform: platform,
-          size: AppDimens.shareInnerEllipse,
         ),
       );
     }
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        _IconCircle(platform: platform, size: AppDimens.shareEllipse),
-        if (platform.businessBadge)
-          Positioned(
-            right: AppDimens.badgeOffset,
-            bottom: AppDimens.badgeOffset,
-            child: Container(
-              width: AppDimens.businessBadge,
-              height: AppDimens.businessBadge,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                color: AppColors.activeGreen,
-                shape: BoxShape.circle,
+    return Semantics(
+      label: platform.label,
+      button: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            _IconCircle(platform: platform, size: AppDimens.shareEllipse),
+            if (platform.businessBadge)
+              Positioned(
+                right: AppDimens.badgeOffset,
+                bottom: AppDimens.badgeOffset,
+                child: Container(
+                  width: AppDimens.businessBadge,
+                  height: AppDimens.businessBadge,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    color: AppColors.activeGreen,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Text('B', style: AppTypography.businessBadge),
+                ),
               ),
-              child: const Text('B', style: AppTypography.businessBadge),
-            ),
-          ),
-      ],
+          ],
+        ),
+      ),
     );
   }
 }

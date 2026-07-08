@@ -7,9 +7,14 @@ import '../../domain/domain.dart';
 import 'platform_icon.dart';
 
 class QuickShareBar extends StatelessWidget {
-  const QuickShareBar({super.key, required this.platforms});
+  const QuickShareBar({
+    super.key,
+    required this.platforms,
+    required this.onPlatformTap,
+  });
 
   final List<SharePlatform> platforms;
+  final ValueChanged<SharePlatform> onPlatformTap;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +35,11 @@ class QuickShareBar extends StatelessWidget {
               separatorBuilder: (context, index) =>
                   const SizedBox(width: AppDimens.platformGap),
               itemBuilder: (context, index) {
-                return PlatformIcon(platform: platforms[index]);
+                final platform = platforms[index];
+                return PlatformIcon(
+                  platform: platform,
+                  onTap: () => onPlatformTap(platform),
+                );
               },
             ),
           ),
