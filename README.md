@@ -6,6 +6,17 @@ captions, delayed product context, a multi-platform share action, and a dark
 checklist launch experience, all built as a compact single-screen assignment
 with clear separation between data, state, and presentation.
 
+## Demo
+
+### Full Walkthrough
+![Full Walkthrough](assets/demo/walkthrough.gif)
+
+### Part 2
+![Part 2](assets/demo/part2.gif)
+
+### Part 3
+![Part 3](assets/demo/part3.gif)
+
 ## How To Run
 
 Prerequisites:
