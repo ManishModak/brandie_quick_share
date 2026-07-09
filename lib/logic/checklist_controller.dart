@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../domain/domain.dart';
-import 'timer_factory.dart';
 
 enum StepStatus { pending, loading, completed }
 
@@ -12,13 +11,11 @@ class ChecklistController extends ChangeNotifier {
   ChecklistController({
     required List<ChecklistStep> steps,
     this.stepDuration = const Duration(seconds: 2),
-    this.timerFactory = createTimer,
   }) : steps = List.unmodifiable(steps),
        _statuses = List.filled(steps.length, StepStatus.pending);
 
   final List<ChecklistStep> steps;
   final Duration stepDuration;
-  final TimerFactory timerFactory;
 
   final List<StepStatus> _statuses;
   Timer? _timer;
@@ -27,7 +24,6 @@ class ChecklistController extends ChangeNotifier {
 
   List<StepStatus> get statuses => List.unmodifiable(_statuses);
   bool get isAllDone =>
-      _statuses.isNotEmpty &&
       _statuses.every((status) => status == StepStatus.completed);
 
   void start() {
@@ -50,7 +46,7 @@ class ChecklistController extends ChangeNotifier {
     _activeIndex = index;
     _statuses[index] = StepStatus.loading;
     notifyListeners();
-    _timer = timerFactory(stepDuration, _completeActiveStep);
+    _timer = Timer(stepDuration, _completeActiveStep);
   }
 
   void _completeActiveStep() {

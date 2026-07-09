@@ -5,7 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Domain models', () {
     test('ReferralDetails formats the referral block', () {
-      const referral = ReferralDetails();
+      const referral = ReferralDetails(
+        code: 'UK-AMANDA3012',
+        link: 'www.oriflame.com/giordani/amada3012',
+      );
 
       expect(
         referral.formattedBlock,
@@ -16,7 +19,10 @@ void main() {
     });
 
     test('SmartPost composes full caption from body and referral block', () {
-      const referral = ReferralDetails();
+      const referral = ReferralDetails(
+        code: 'UK-AMANDA3012',
+        link: 'www.oriflame.com/giordani/amada3012',
+      );
       const post = SmartPost(
         id: 'post-1',
         backdropAsset: 'assets/images/post_1_lipstick.jpg',
@@ -26,20 +32,29 @@ void main() {
         captionBody: 'Caption body',
         referral: referral,
         product: ProductInfo(
+          name: 'Giordani Gold Lipstick',
+          price: '\$14.99',
+          saleBadge: '30% off',
+          subtitle: 'Trending right now and on sale',
           thumbnailAsset: 'assets/images/post_1_lipstick.jpg',
           storeLink: 'www.oriflame.com/giordani/amada3012',
         ),
       );
 
-      expect(post.fullCaption, 'Caption body\n\n${referral.formattedBlock}');
+      expect(
+        post.fullCaption,
+        'Caption body\n'
+        'Use my referral code: UK-AMANDA3012\n'
+        'Use my referral link: www.oriflame.com/giordani/amada3012',
+      );
     });
   });
 
   group('MockPostRepository', () {
-    test('returns three posts', () {
+    test('returns three posts', () async {
       final repository = MockPostRepository();
 
-      final posts = repository.fetchSmartPosts();
+      final posts = await repository.fetchSmartPosts();
 
       expect(posts, hasLength(3));
       expect(posts[0].backdropAsset, 'assets/images/post_1_lipstick.jpg');
@@ -47,10 +62,10 @@ void main() {
       expect(posts[2].music.artist, 'Madonna');
     });
 
-    test('returns ten platforms in the specified order', () {
+    test('returns ten platforms in the specified order', () async {
       final repository = MockPostRepository();
 
-      final platforms = repository.fetchSharePlatforms();
+      final platforms = await repository.fetchSharePlatforms();
 
       expect(platforms, hasLength(10));
       expect(platforms.map((platform) => platform.label), [
@@ -58,18 +73,18 @@ void main() {
         'Instagram Story',
         'Facebook Post',
         'Facebook Story',
+        'Messenger',
         'TikTok',
         'WhatsApp',
         'WhatsApp Business',
         'Telegram',
         'Mail',
-        'Messenger',
       ]);
       expect(platforms[1].storyBorderColor, isNotNull);
       expect(platforms[3].storyBorderColor, isNotNull);
       expect(platforms[0].splash.showFromMeta, isTrue);
-      expect(platforms[9].splash.showFromMeta, isTrue);
-      expect(platforms[4].splash.showFromMeta, isFalse);
+      expect(platforms[4].splash.showFromMeta, isTrue);
+      expect(platforms[5].splash.showFromMeta, isFalse);
     });
   });
 }

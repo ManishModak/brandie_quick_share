@@ -21,7 +21,7 @@ import 'smart_post_checklist_screen.dart';
 class QuickShareScreen extends StatefulWidget {
   const QuickShareScreen({
     super.key,
-    PostRepository? repository,
+    required this.repository,
     this.productOverlayDelay = const Duration(
       seconds: AppDimens.productOverlayDelaySeconds,
     ),
@@ -31,7 +31,7 @@ class QuickShareScreen extends StatefulWidget {
     this.redirectDuration = const Duration(
       seconds: AppDimens.defaultRedirectSeconds,
     ),
-  }) : repository = repository ?? const MockPostRepository();
+  });
 
   final PostRepository repository;
   final Duration productOverlayDelay;
@@ -43,42 +43,58 @@ class QuickShareScreen extends StatefulWidget {
 }
 
 class _QuickShareScreenState extends State<QuickShareScreen> {
-  late final List<SmartPost> _posts;
-  late final List<SharePlatform> _platforms;
-  late final FeedController _feedController;
-  late final ProductOverlayController _productOverlayController;
-  late final ShareFlowController _shareFlowController;
-  late final Map<String, CaptionController> _captionControllers;
+  List<SmartPost> _posts = [];
+  List<SharePlatform> _platforms = [];
+  FeedController? _feedController;
+  ProductOverlayController? _productOverlayController;
+  ShareFlowController? _shareFlowController;
+  Map<String, CaptionController> _captionControllers = {};
 
+  bool _ready = false;
   bool _splashRoutePushed = false;
 
   @override
   void initState() {
     super.initState();
-    _posts = widget.repository.fetchSmartPosts();
-    _platforms = widget.repository.fetchSharePlatforms();
-    _feedController = FeedController(postCount: _posts.length);
-    _productOverlayController = ProductOverlayController(
-      delay: widget.productOverlayDelay,
-    )..arm();
-    _shareFlowController = ShareFlowController(
-      steps: widget.repository.fetchShareSteps(),
-      stepDuration: widget.shareStepDuration,
-      redirectDuration: widget.redirectDuration,
-    )..addListener(_onShareFlowChanged);
-    _captionControllers = {
-      for (final post in _posts)
-        post.id: CaptionController(initialText: post.captionBody),
-    };
+    _load();
+  }
+
+  Future<void> _load() async {
+    final posts = await widget.repository.fetchSmartPosts();
+    final platforms = await widget.repository.fetchSharePlatforms();
+    final shareSteps = await widget.repository.fetchShareSteps();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _posts = posts;
+      _platforms = platforms;
+      _feedController = FeedController(postCount: posts.length);
+      _productOverlayController = ProductOverlayController(
+        delay: widget.productOverlayDelay,
+      )..arm();
+      _shareFlowController = ShareFlowController(
+        steps: shareSteps,
+        stepDuration: widget.shareStepDuration,
+        redirectDuration: widget.redirectDuration,
+      )..addListener(_onShareFlowChanged);
+      _captionControllers = {
+        for (final post in posts)
+          post.id: CaptionController(initialText: post.fullCaption),
+      };
+      _ready = true;
+    });
   }
 
   @override
   void dispose() {
     _shareFlowController
-      ..removeListener(_onShareFlowChanged)
+      ?..removeListener(_onShareFlowChanged)
       ..dispose();
-    _productOverlayController.dispose();
-    _feedController.dispose();
+    _productOverlayController?.dispose();
+    _feedController?.dispose();
     for (final controller in _captionControllers.values) {
       controller.dispose();
     }
@@ -86,9 +102,14 @@ class _QuickShareScreenState extends State<QuickShareScreen> {
   }
 
   void _onPageChanged(int index) {
-    _feedController.onPageChanged(index);
+    final feedController = _feedController;
+    final productOverlayController = _productOverlayController;
+    if (feedController == null || productOverlayController == null) {
+      return;
+    }
+    feedController.onPageChanged(index);
     HapticFeedbackService.selectionClick();
-    _productOverlayController
+    productOverlayController
       ..reset()
       ..arm();
   }
@@ -98,7 +119,7 @@ class _QuickShareScreenState extends State<QuickShareScreen> {
   }
 
   void _startShare(SharePlatform platform) {
-    _shareFlowController.start(platform);
+    _shareFlowController?.start(platform);
   }
 
   void _showStoreSnackBar() {
@@ -119,9 +140,14 @@ class _QuickShareScreenState extends State<QuickShareScreen> {
   }
 
   void _onShareFlowChanged() {
-    final phase = _shareFlowController.phase;
+    final shareFlowController = _shareFlowController;
+    if (shareFlowController == null) {
+      return;
+    }
+
+    final phase = shareFlowController.phase;
     if (phase == ShareFlowPhase.redirecting && !_splashRoutePushed) {
-      final platform = _shareFlowController.activePlatform;
+      final platform = shareFlowController.activePlatform;
       if (platform == null) {
         return;
       }
@@ -141,12 +167,23 @@ class _QuickShareScreenState extends State<QuickShareScreen> {
         Navigator.of(context).pop();
       }
       _splashRoutePushed = false;
-      _shareFlowController.finish();
+      shareFlowController.finish();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_ready) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final feedController = _feedController!;
+    final productOverlayController = _productOverlayController!;
+    final shareFlowController = _shareFlowController!;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -172,7 +209,7 @@ class _QuickShareScreenState extends State<QuickShareScreen> {
                     onPageChanged: _onPageChanged,
                     itemBuilder: (context, index) {
                       return ListenableBuilder(
-                        listenable: _feedController,
+                        listenable: feedController,
                         builder: (context, child) {
                           final post = _posts[index];
                           final captionController =
@@ -180,11 +217,11 @@ class _QuickShareScreenState extends State<QuickShareScreen> {
                           return FeedCard(
                             post: post,
                             platforms: _platforms,
-                            counterLabel: _feedController.counterLabel,
-                            activeIndex: _feedController.activeIndex,
+                            counterLabel: feedController.counterLabel,
+                            activeIndex: feedController.activeIndex,
                             postCount: _posts.length,
                             captionController: captionController,
-                            productOverlayController: _productOverlayController,
+                            productOverlayController: productOverlayController,
                             onEditCaption: () {
                               _openEditCaption(captionController);
                             },
@@ -196,34 +233,11 @@ class _QuickShareScreenState extends State<QuickShareScreen> {
                     },
                   ),
                   const BottomNavOverlay(),
-                  const _HomeIndicator(),
-                  ShareProgressOverlay(controller: _shareFlowController),
+                  ShareProgressOverlay(controller: shareFlowController),
                 ],
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HomeIndicator extends StatelessWidget {
-  const _HomeIndicator();
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: AppDimens.homeIndicatorBottom),
-        child: Container(
-          width: AppDimens.homeIndicatorWidth,
-          height: AppDimens.homeIndicatorHeight,
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(AppDimens.homeIndicatorHeight),
-          ),
         ),
       ),
     );

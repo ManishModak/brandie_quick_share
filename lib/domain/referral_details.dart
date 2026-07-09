@@ -1,8 +1,5 @@
 class ReferralDetails {
-  const ReferralDetails({
-    this.code = 'UK-AMANDA3012',
-    this.link = 'www.oriflame.com/giordani/amada3012',
-  });
+  const ReferralDetails({required this.code, required this.link});
 
   final String code;
   final String link;

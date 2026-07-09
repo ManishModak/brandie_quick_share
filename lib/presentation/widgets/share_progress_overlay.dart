@@ -1,77 +1,25 @@
-import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../core/app_colors.dart';
 import '../../core/app_dimens.dart';
 import '../../core/app_typography.dart';
 import '../../logic/share_flow_controller.dart';
-import 'spinner_painter.dart';
 
-class ShareProgressOverlay extends StatefulWidget {
+class ShareProgressOverlay extends StatelessWidget {
   const ShareProgressOverlay({super.key, required this.controller});
 
   final ShareFlowController controller;
 
   @override
-  State<ShareProgressOverlay> createState() => _ShareProgressOverlayState();
-}
-
-class _ShareProgressOverlayState extends State<ShareProgressOverlay>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _spinnerController;
-
-  @override
-  void initState() {
-    super.initState();
-    _spinnerController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: AppDimens.shareSpinnerSeconds),
-    );
-    widget.controller.addListener(_syncSpinnerWithPhase);
-    _syncSpinnerWithPhase();
-  }
-
-  @override
-  void didUpdateWidget(covariant ShareProgressOverlay oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller == widget.controller) {
-      return;
-    }
-    oldWidget.controller.removeListener(_syncSpinnerWithPhase);
-    widget.controller.addListener(_syncSpinnerWithPhase);
-    _syncSpinnerWithPhase();
-  }
-
-  void _syncSpinnerWithPhase() {
-    if (widget.controller.phase == ShareFlowPhase.generating) {
-      if (!_spinnerController.isAnimating) {
-        _spinnerController.repeat();
-      }
-      return;
-    }
-
-    if (_spinnerController.isAnimating) {
-      _spinnerController.stop();
-    }
-    _spinnerController.reset();
-  }
-
-  @override
-  void dispose() {
-    widget.controller.removeListener(_syncSpinnerWithPhase);
-    _spinnerController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: widget.controller,
+      listenable: controller,
       builder: (context, child) {
         final isGenerating =
-            widget.controller.phase == ShareFlowPhase.generating;
+            controller.phase == ShareFlowPhase.generating;
         return IgnorePointer(
           ignoring: !isGenerating,
           child: AnimatedOpacity(
@@ -91,8 +39,7 @@ class _ShareProgressOverlayState extends State<ShareProgressOverlay>
               },
               child: Center(
                 child: _ShareProgressDialog(
-                  controller: widget.controller,
-                  spinnerController: _spinnerController,
+                  controller: controller,
                 ),
               ),
             ),
@@ -106,11 +53,9 @@ class _ShareProgressOverlayState extends State<ShareProgressOverlay>
 class _ShareProgressDialog extends StatelessWidget {
   const _ShareProgressDialog({
     required this.controller,
-    required this.spinnerController,
   });
 
   final ShareFlowController controller;
-  final AnimationController spinnerController;
 
   @override
   Widget build(BuildContext context) {
@@ -132,57 +77,53 @@ class _ShareProgressDialog extends StatelessWidget {
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          Positioned(
-            left:
-                AppDimens.shareDialogWidth * AppDimens.shareSpinnerLeftFraction,
-            top:
-                AppDimens.shareDialogHeight * AppDimens.shareSpinnerTopFraction,
-            width: AppDimens.shareSpinnerSize,
-            height: AppDimens.shareSpinnerSize,
-            child: AnimatedBuilder(
-              animation: spinnerController,
-              builder: (context, child) {
-                return Transform.rotate(
-                  angle: spinnerController.value * 2 * math.pi,
-                  child: child,
-                );
-              },
-              child: const CustomPaint(painter: SpinnerPainter()),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: AppDimens.shareSpinnerSize,
+              height: AppDimens.shareSpinnerSize,
+              decoration: const BoxDecoration(
+                color: AppColors.activeGreen,
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(10),
+              child: SvgPicture.asset(
+                'assets/icons/brand_icon.svg',
+                colorFilter: const ColorFilter.mode(
+                  AppColors.white,
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
-          ),
-          Positioned(
-            left: AppDimens.shareDialogWidth * AppDimens.shareLabelSideFraction,
-            top: AppDimens.shareDialogHeight * AppDimens.shareLabelTopFraction,
-            right:
-                AppDimens.shareDialogWidth * AppDimens.shareLabelSideFraction,
-            child: AnimatedSwitcher(
+            const SizedBox(height: 12),
+            AnimatedSwitcher(
               duration: const Duration(
                 milliseconds: AppDimens.standardAnimationMs,
               ),
-              child: Text(
-                step?.label ?? '',
+              child: SizedBox(
                 key: ValueKey(step?.label),
-                textAlign: TextAlign.center,
-                style: AppTypography.loadingStatus,
+                width: double.infinity,
+                child: Center(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      step?.label ?? '',
+                      textAlign: TextAlign.center,
+                      style: AppTypography.loadingStatus,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-          Positioned(
-            left:
-                AppDimens.shareDialogWidth *
-                AppDimens.shareProgressLeftFraction,
-            top:
-                AppDimens.shareDialogHeight *
-                AppDimens.shareProgressTopFraction,
-            right:
-                AppDimens.shareDialogWidth *
-                AppDimens.shareProgressRightFraction,
-            height:
-                AppDimens.shareDialogHeight *
-                AppDimens.shareProgressHeightFraction,
-            child: DecoratedBox(
+            const SizedBox(height: 16),
+            Container(
+              height: AppDimens.shareDialogHeight * AppDimens.shareProgressHeightFraction,
+              width: double.infinity,
+              margin: const EdgeInsets.only(left: 32, right: 33),
               decoration: BoxDecoration(
                 color: AppColors.progressTrack,
                 borderRadius: BorderRadius.circular(
@@ -197,6 +138,7 @@ class _ShareProgressDialog extends StatelessWidget {
                   ),
                   curve: Curves.easeInOut,
                   widthFactor: controller.progress,
+                  heightFactor: 1.0,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: AppColors.activeGreen,
@@ -208,9 +150,11 @@ class _ShareProgressDialog extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
+
+

@@ -25,15 +25,15 @@ class CardHeader extends StatelessWidget {
               width: AppDimens.avatarBorderWidth,
             ),
           ),
-          child: const CircleAvatar(
-            backgroundColor: AppColors.activeGreen,
-            // Placeholder because no avatar asset is provided in Phase 3.
-            child: Text(
-              'A',
-              style: TextStyle(
-                fontFamily: AppTypography.fontFamily,
-                fontWeight: FontWeight.w700,
-                color: AppColors.white,
+          child: ClipOval(
+            child: Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()
+                ..scale(1.5)
+                ..translate(0.0, 2.0),
+              child: Image.asset(
+                'assets/images/product_lipstick_thumb.png',
+                fit: BoxFit.cover,
               ),
             ),
           ),
@@ -43,28 +43,38 @@ class CardHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: AppDimens.readyPillHeight,
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimens.readyPillHorizontalPadding,
-              ),
+              height: 20,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.tagPurple, AppColors.tagPink],
+                image: const DecorationImage(
+                  image: AssetImage('assets/images/brandie_logo_gradient.png'),
+                  fit: BoxFit.cover,
                 ),
-                borderRadius: BorderRadius.circular(AppDimens.headerTagRadius),
+                borderRadius: BorderRadius.circular(15),
               ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.auto_awesome, size: 10, color: AppColors.white),
-                  SizedBox(width: AppDimens.editCaptionIconGap),
+                  SizedBox(width: 4),
                   Text('Ready to share', style: AppTypography.readyPill),
                 ],
               ),
             ),
-            const SizedBox(height: AppDimens.cardInfoGap),
-            Text(post.communityLabel, style: AppTypography.headerTag),
+            const SizedBox(height: 4),
+            Text(
+              post.communityLabel,
+              style: AppTypography.headerTag.copyWith(
+                shadows: const [
+                  Shadow(
+                    offset: Offset(0, 1),
+                    blurRadius: 3,
+                    color: Color.fromRGBO(0, 0, 0, 0.4),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ],

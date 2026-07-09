@@ -18,4 +18,20 @@ abstract final class AppTheme {
       colorScheme: colorScheme,
     );
   }
+
+  static ThemeData get dark {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: AppColors.activeGreen,
+      primary: AppColors.activeGreen,
+      brightness: Brightness.dark,
+      surface: AppColors.checklistBackground,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      fontFamily: AppTypography.fontFamily,
+      scaffoldBackgroundColor: AppColors.checklistBackground,
+      colorScheme: colorScheme,
+    );
+  }
 }

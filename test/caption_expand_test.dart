@@ -1,4 +1,5 @@
 import 'package:brandie_quick_share/core/app_theme.dart';
+import 'package:brandie_quick_share/data/data.dart';
 import 'package:brandie_quick_share/presentation/screens/quick_share_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,11 +13,15 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const QuickShareScreen(productOverlayDelay: Duration(minutes: 1)),
+        home: const QuickShareScreen(
+          repository: MockPostRepository(),
+          productOverlayDelay: Duration(minutes: 1),
+        ),
       ),
     );
+    await tester.pump();
 
-    await tester.tap(find.text('See More'));
+    await tester.tap(find.text('see more'));
     await tester.pumpAndSettle();
 
     final editCaption = find.text('Edit Caption');

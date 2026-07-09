@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 
 import 'core/app_theme.dart';
+import 'data/data.dart';
 import 'presentation/screens/smart_post_checklist_screen.dart';
 
 void main() {
-  runApp(const BrandieQuickShareApp());
+  final PostRepository repository = MockPostRepository();
+  runApp(BrandieQuickShareApp(repository: repository));
 }
 
 class BrandieQuickShareApp extends StatelessWidget {
-  const BrandieQuickShareApp({super.key});
+  const BrandieQuickShareApp({super.key, required this.repository});
+
+  final PostRepository repository;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +20,9 @@ class BrandieQuickShareApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Brandie Quick Share',
       theme: AppTheme.light,
-      home: const SmartPostChecklistScreen(),
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,
+      home: SmartPostChecklistScreen(repository: repository),
     );
   }
 }

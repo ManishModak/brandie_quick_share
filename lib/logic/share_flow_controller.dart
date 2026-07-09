@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../domain/domain.dart';
-import 'timer_factory.dart';
 
 enum ShareFlowPhase { idle, generating, redirecting, done }
 
@@ -13,13 +12,11 @@ class ShareFlowController extends ChangeNotifier {
     required List<ShareStep> steps,
     this.stepDuration = const Duration(milliseconds: 1200),
     this.redirectDuration = const Duration(seconds: 2),
-    this.timerFactory = createTimer,
   }) : _steps = List.unmodifiable(steps);
 
   final List<ShareStep> _steps;
   final Duration stepDuration;
   final Duration redirectDuration;
-  final TimerFactory timerFactory;
 
   Timer? _timer;
   ShareFlowPhase _phase = ShareFlowPhase.idle;
@@ -53,7 +50,7 @@ class ShareFlowController extends ChangeNotifier {
 
   void _scheduleNextStep() {
     _timer?.cancel();
-    _timer = timerFactory(stepDuration, _advanceStep);
+    _timer = Timer(stepDuration, _advanceStep);
   }
 
   void _advanceStep() {
@@ -73,7 +70,7 @@ class ShareFlowController extends ChangeNotifier {
     _phase = ShareFlowPhase.redirecting;
     _currentStepIndex = null;
     notifyListeners();
-    _timer = timerFactory(redirectDuration, () {
+    _timer = Timer(redirectDuration, () {
       _timer = null;
       if (_phase != ShareFlowPhase.redirecting) {
         return;

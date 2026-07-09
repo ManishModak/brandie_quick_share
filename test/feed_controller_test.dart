@@ -35,6 +35,15 @@ void main() {
       expect(notifications, 1);
     });
 
+    test('clamps constructor initial index', () {
+      expect(FeedController(postCount: 3, initialIndex: 99).activeIndex, 2);
+      expect(FeedController(postCount: 3, initialIndex: -4).activeIndex, 0);
+
+      final empty = FeedController(postCount: 0, initialIndex: 99);
+      expect(empty.activeIndex, 0);
+      expect(empty.counterLabel, '0 of 0');
+    });
+
     test('handles empty feeds', () {
       final controller = FeedController(postCount: 0);
 

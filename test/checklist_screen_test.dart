@@ -1,4 +1,5 @@
 import 'package:brandie_quick_share/core/app_theme.dart';
+import 'package:brandie_quick_share/data/data.dart';
 import 'package:brandie_quick_share/presentation/screens/smart_post_checklist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,10 +18,12 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: const SmartPostChecklistScreen(
+          repository: MockPostRepository(),
           stepDuration: Duration(milliseconds: 10),
         ),
       ),
     );
+    await tester.pump();
 
     expect(
       find.text('Building personalised\nSmart Posts for you!'),

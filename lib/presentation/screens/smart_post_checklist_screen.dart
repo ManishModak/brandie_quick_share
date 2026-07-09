@@ -14,9 +14,9 @@ import 'quick_share_screen.dart';
 class SmartPostChecklistScreen extends StatefulWidget {
   const SmartPostChecklistScreen({
     super.key,
+    required this.repository,
     this.stepDuration = const Duration(seconds: 2),
-    PostRepository? repository,
-  }) : repository = repository ?? const MockPostRepository();
+  });
 
   final Duration stepDuration;
   final PostRepository repository;
@@ -28,20 +28,16 @@ class SmartPostChecklistScreen extends StatefulWidget {
 
 class _SmartPostChecklistScreenState extends State<SmartPostChecklistScreen>
     with TickerProviderStateMixin {
-  late final ChecklistController _controller;
+  ChecklistController? _controller;
   late final AnimationController _spinnerController;
   late final AnimationController _doneController;
-  late List<StepStatus> _previousStatuses;
+  late final AnimationController _entryController;
+  List<StepStatus> _previousStatuses = const [];
   bool _navigated = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = ChecklistController(
-      steps: widget.repository.fetchChecklistSteps(),
-      stepDuration: widget.stepDuration,
-    );
-    _previousStatuses = _controller.statuses;
     _spinnerController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: AppDimens.checklistSpinnerMs),
@@ -50,22 +46,45 @@ class _SmartPostChecklistScreenState extends State<SmartPostChecklistScreen>
       vsync: this,
       duration: const Duration(milliseconds: AppDimens.checklistFooterFadeMs),
     );
-    _controller.addListener(_onChecklistChanged);
-    _controller.start();
+    _entryController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    _init();
+    _entryController.forward();
+  }
+
+  Future<void> _init() async {
+    final steps = await widget.repository.fetchChecklistSteps();
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _controller = ChecklistController(
+        steps: steps,
+        stepDuration: widget.stepDuration,
+      );
+      _previousStatuses = _controller!.statuses;
+    });
+    _controller!
+      ..addListener(_onChecklistChanged)
+      ..start();
   }
 
   @override
   void dispose() {
     _controller
-      ..removeListener(_onChecklistChanged)
+      ?..removeListener(_onChecklistChanged)
       ..dispose();
     _spinnerController.dispose();
     _doneController.dispose();
+    _entryController.dispose();
     super.dispose();
   }
 
   void _onChecklistChanged() {
-    final statuses = _controller.statuses;
+    final controller = _controller!;
+    final statuses = controller.statuses;
     for (var i = 0; i < statuses.length; i += 1) {
       if (statuses[i] == StepStatus.completed &&
           _previousStatuses[i] != StepStatus.completed) {
@@ -74,7 +93,7 @@ class _SmartPostChecklistScreenState extends State<SmartPostChecklistScreen>
     }
     _previousStatuses = statuses;
 
-    if (_controller.isAllDone && !_navigated) {
+    if (controller.isAllDone && !_navigated) {
       _navigated = true;
       _doneController.forward();
       Future<void>.delayed(
@@ -118,51 +137,111 @@ class _SmartPostChecklistScreenState extends State<SmartPostChecklistScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? AppColors.white : AppColors.wordmark;
+    final footerTextColor = isDark
+        ? AppColors.checklistGreen
+        : AppColors.inactiveText;
+
     return Scaffold(
-      backgroundColor: AppColors.checklistBackground,
+      backgroundColor: isDark
+          ? AppColors.checklistBackground
+          : AppColors.background,
       body: Center(
         child: SizedBox(
           width: AppDimens.checklistCardWidth,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Building personalised\nSmart Posts for you!',
-                textAlign: TextAlign.center,
-                style: AppTypography.checklistTitle,
+              AnimatedBuilder(
+                animation: _entryController,
+                builder: (context, child) {
+                  final curve = CurvedAnimation(
+                    parent: _entryController,
+                    curve: const Interval(0.0, 0.4, curve: Curves.easeOutCubic),
+                  );
+                  return Opacity(
+                    opacity: curve.value,
+                    child: Transform.translate(
+                      offset: Offset(0, -10 * (1.0 - curve.value)),
+                      child: child,
+                    ),
+                  );
+                },
+                child: Text(
+                  'Building personalised\nSmart Posts for you!',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.checklistTitle.copyWith(
+                    color: textColor,
+                  ),
+                ),
               ),
               const SizedBox(height: AppDimens.checklistGap),
               SizedBox(
                 width: AppDimens.checklistContainerWidth,
-                child: ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, child) {
-                    return Column(
-                      children: [
-                        for (var i = 0; i < _controller.steps.length; i += 1)
-                          Padding(
-                            padding: EdgeInsets.only(
-                              bottom: i == _controller.steps.length - 1
-                                  ? AppDimens.zero
-                                  : AppDimens.checklistRowGap,
-                            ),
-                            child: _ChecklistRow(
-                              label: _controller.steps[i].label,
-                              status: _controller.statuses[i],
-                              spinnerController: _spinnerController,
-                            ),
-                          ),
-                      ],
-                    );
-                  },
-                ),
+                child: _controller == null
+                    ? const SizedBox()
+                    : ListenableBuilder(
+                        listenable: _controller!,
+                        builder: (context, child) {
+                          final controller = _controller!;
+                          return Column(
+                            children: [
+                              for (
+                                var i = 0;
+                                i < controller.steps.length;
+                                i += 1
+                              )
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom: i == controller.steps.length - 1
+                                        ? AppDimens.zero
+                                        : AppDimens.checklistRowGap,
+                                  ),
+                                  child: AnimatedBuilder(
+                                    animation: _entryController,
+                                    builder: (context, child) {
+                                      final start = i * 0.15;
+                                      final end = (start + 0.4).clamp(0.0, 1.0);
+                                      final curve = CurvedAnimation(
+                                        parent: _entryController,
+                                        curve: Interval(
+                                          start,
+                                          end,
+                                          curve: Curves.easeOutCubic,
+                                        ),
+                                      );
+                                      return Opacity(
+                                        opacity: curve.value,
+                                        child: Transform.translate(
+                                          offset: Offset(
+                                            0,
+                                            15 * (1.0 - curve.value),
+                                          ),
+                                          child: child,
+                                        ),
+                                      );
+                                    },
+                                    child: _ChecklistRow(
+                                      label: controller.steps[i].label,
+                                      status: controller.statuses[i],
+                                      spinnerController: _spinnerController,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
+                      ),
               ),
               const SizedBox(height: AppDimens.checklistFooterTop),
               FadeTransition(
                 opacity: _doneController,
-                child: const Text(
+                child: Text(
                   'All set! Get ready to share...',
-                  style: AppTypography.checklistFooter,
+                  style: AppTypography.checklistFooter.copyWith(
+                    color: footerTextColor,
+                  ),
                 ),
               ),
             ],
@@ -186,9 +265,11 @@ class _ChecklistRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? AppColors.white : AppColors.wordmark;
     final isActiveOrDone = status != StepStatus.pending;
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
           width: AppDimens.checklistMarker,
@@ -206,7 +287,7 @@ class _ChecklistRow extends StatelessWidget {
             ),
             style: AppTypography.checklistRow.copyWith(
               color: isActiveOrDone
-                  ? AppColors.white
+                  ? textColor
                   : AppColors.checklistPendingText,
               fontWeight: isActiveOrDone ? FontWeight.w700 : FontWeight.w400,
             ),
@@ -229,14 +310,25 @@ class _ChecklistMarker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final checkIconColor = isDark
+        ? AppColors.checklistBackground
+        : AppColors.white;
+
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: AppDimens.fastAnimationMs),
+      duration: const Duration(milliseconds: 300),
       transitionBuilder: (child, animation) {
-        final scale = TweenSequence<double>([
-          TweenSequenceItem(tween: Tween(begin: 1, end: 1.15), weight: 50),
-          TweenSequenceItem(tween: Tween(begin: 1.15, end: 1), weight: 50),
-        ]).animate(animation);
-        return ScaleTransition(scale: scale, child: child);
+        final scale = Tween<double>(begin: 0.8, end: 1.0).animate(
+          CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+        );
+        final opacity = Tween<double>(
+          begin: 0.0,
+          end: 1.0,
+        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeIn));
+        return ScaleTransition(
+          scale: scale,
+          child: FadeTransition(opacity: opacity, child: child),
+        );
       },
       child: switch (status) {
         StepStatus.pending => Container(
@@ -258,11 +350,15 @@ class _ChecklistMarker extends StatelessWidget {
               child: child,
             );
           },
-          child: const CustomPaint(
-            painter: SpinnerPainter(
-              color: AppColors.checklistGreen,
-              trackColor: Colors.transparent,
-              strokeWidth: 2.5,
+          child: const SizedBox(
+            width: AppDimens.checklistMarker,
+            height: AppDimens.checklistMarker,
+            child: CustomPaint(
+              painter: SpinnerPainter(
+                color: AppColors.checklistGreen,
+                trackColor: Colors.transparent,
+                strokeWidth: 2.5,
+              ),
             ),
           ),
         ),
@@ -272,10 +368,19 @@ class _ChecklistMarker extends StatelessWidget {
             color: AppColors.checklistGreen,
             shape: BoxShape.circle,
           ),
-          child: const Icon(
-            Icons.check,
-            size: AppDimens.checklistCheckIcon,
-            color: AppColors.checklistBackground,
+          alignment: Alignment.center,
+          child: TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.elasticOut,
+            tween: Tween<double>(begin: 0.0, end: 1.0),
+            builder: (context, value, child) {
+              return Transform.scale(scale: value, child: child);
+            },
+            child: Icon(
+              Icons.check_rounded,
+              size: AppDimens.checklistCheckIcon,
+              color: checkIconColor,
+            ),
           ),
         ),
       },

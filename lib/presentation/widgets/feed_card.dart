@@ -66,20 +66,18 @@ class FeedCard extends StatelessWidget {
         ),
         Positioned(
           left: AppDimens.bottomStackLeft,
-          bottom: AppDimens.productOverlayBottom,
-          child: ProductOverlayCard(
-            controller: productOverlayController,
-            product: post.product,
-            onTap: onProductTap,
-          ),
-        ),
-        Positioned(
-          left: AppDimens.bottomStackLeft,
           right: AppDimens.horizontalPadding,
           bottom: AppDimens.bottomStackBottom,
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              ProductOverlayCard(
+                controller: productOverlayController,
+                product: post.product,
+                onTap: onProductTap,
+              ),
+              const SizedBox(height: AppDimens.productOverlayGap),
               MusicBar(music: post.music),
               const SizedBox(height: AppDimens.productCardGap),
               CaptionCard(controller: captionController, onEdit: onEditCaption),

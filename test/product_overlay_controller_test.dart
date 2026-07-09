@@ -57,6 +57,25 @@ void main() {
       });
     });
 
+    test('dismiss hides visible overlay and notifies listeners', () {
+      fakeAsync((async) {
+        final controller = ProductOverlayController(
+          delay: const Duration(seconds: 3),
+        );
+
+        controller.arm();
+        async.elapse(const Duration(seconds: 3));
+        expect(controller.isVisible, isTrue);
+
+        var notifications = 0;
+        controller.addListener(() => notifications += 1);
+        controller.dismiss();
+
+        expect(controller.isVisible, isFalse);
+        expect(notifications, 1);
+      });
+    });
+
     test('does not fire callbacks after dispose', () {
       fakeAsync((async) {
         final controller = ProductOverlayController(

@@ -23,5 +23,8 @@ class SmartPost {
   final ReferralDetails referral;
   final ProductInfo product;
 
-  String get fullCaption => '$captionBody\n\n${referral.formattedBlock}';
+  String get fullCaption =>
+      '$captionBody\n'
+      'Use my referral code: ${referral.code}\n'
+      'Use my referral link: ${referral.link}';
 }

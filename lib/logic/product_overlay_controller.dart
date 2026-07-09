@@ -2,17 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
-import 'timer_factory.dart';
-
 /// Delays product overlay visibility so page changes do not flash the card.
 class ProductOverlayController extends ChangeNotifier {
-  ProductOverlayController({
-    this.delay = const Duration(seconds: 3),
-    this.timerFactory = createTimer,
-  });
+  ProductOverlayController({this.delay = const Duration(seconds: 3)});
 
   final Duration delay;
-  final TimerFactory timerFactory;
 
   Timer? _timer;
   bool _isVisible = false;
@@ -26,7 +20,7 @@ class ProductOverlayController extends ChangeNotifier {
       _isVisible = false;
       notifyListeners();
     }
-    _timer = timerFactory(delay, () {
+    _timer = Timer(delay, () {
       if (_isDisposed) {
         return;
       }

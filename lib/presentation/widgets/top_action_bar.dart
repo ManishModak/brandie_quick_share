@@ -20,7 +20,8 @@ class TopActionBar extends StatelessWidget {
             left: AppDimens.horizontalPadding,
             bottom: AppDimens.topActionBottom,
             child: _TopAction(
-              iconAsset: 'assets/icons/profile.svg',
+              iconAsset: 'assets/icons/brand_icon.svg',
+              iconSize: 20,
               label: 'Your Assistant',
               showAiBadge: true,
               onTap: onAssistantTap,
@@ -47,12 +48,14 @@ class _TopAction extends StatelessWidget {
     required this.label,
     this.showAiBadge = false,
     this.onTap,
+    this.iconSize = AppDimens.topActionIcon,
   });
 
   final String iconAsset;
   final String label;
   final bool showAiBadge;
   final VoidCallback? onTap;
+  final double iconSize;
 
   @override
   Widget build(BuildContext context) {
@@ -74,8 +77,8 @@ class _TopAction extends StatelessWidget {
                 alignment: Alignment.center,
                 child: SvgPicture.asset(
                   iconAsset,
-                  width: AppDimens.topActionIcon,
-                  height: AppDimens.topActionIcon,
+                  width: iconSize,
+                  height: iconSize,
                   colorFilter: const ColorFilter.mode(
                     AppColors.white,
                     BlendMode.srcIn,
@@ -85,14 +88,12 @@ class _TopAction extends StatelessWidget {
               if (showAiBadge)
                 Positioned(
                   right: AppDimens.badgeOffset,
-                  bottom: AppDimens.badgeOffset,
+                  top: AppDimens.badgeOffset,
                   child: Container(
-                    width: AppDimens.topActionBadge,
-                    height: AppDimens.topActionBadge,
-                    alignment: Alignment.center,
-                    decoration: const BoxDecoration(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                    decoration: BoxDecoration(
                       color: AppColors.aiBadge,
-                      shape: BoxShape.circle,
+                      borderRadius: BorderRadius.circular(4),
                     ),
                     child: const Text('AI', style: AppTypography.aiBadge),
                   ),

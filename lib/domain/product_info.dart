@@ -1,11 +1,12 @@
 class ProductInfo {
   const ProductInfo({
-    this.name = 'Giordani Gold Lipstick',
-    this.price = '.99',
-    this.saleBadge = '30% off',
-    this.subtitle = 'Trending right now and on sale',
+    required this.name,
+    required this.price,
+    required this.saleBadge,
+    required this.subtitle,
     required this.thumbnailAsset,
     required this.storeLink,
+    this.isTrending = false,
   });
 
   final String name;
@@ -14,4 +15,5 @@ class ProductInfo {
   final String subtitle;
   final String thumbnailAsset;
   final String storeLink;
+  final bool isTrending;
 }

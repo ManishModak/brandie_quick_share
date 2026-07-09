@@ -132,5 +132,12 @@ void main() {
         expect(controller.isAllDone, isFalse);
       });
     });
+
+    test('empty list is all done after start', () {
+      final controller = ChecklistController(steps: const []);
+
+      expect(() => controller.start(), returnsNormally);
+      expect(controller.isAllDone, isTrue);
+    });
   });
 }
