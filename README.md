@@ -2,20 +2,29 @@
 
 Quick Share is a Flutter implementation of a Smart Posts sharing flow for
 beauty consultants. It demonstrates a vertical snapping feed, editable sales
-captions, delayed product context, a multi-platform share action, and a dark
+captions, delayed product context, a multi-platform share action, and an animated
 checklist launch experience, all built as a compact single-screen assignment
 with clear separation between data, state, and presentation.
 
 ## Demo
 
-### Full Walkthrough
-![Full Walkthrough](assets/demo/walkthrough.gif)
-
-### Part 2
-![Part 2](assets/demo/part2.gif)
-
-### Part 3
-![Part 3](assets/demo/part3.gif)
+<table>
+  <tr>
+    <td width="250" align="center"><b>Full walkthrough</b></td>
+    <td width="250" align="center"><b>Browsing the feed</b></td>
+    <td width="250" align="center"><b>Captions &amp; editing</b></td>
+  </tr>
+  <tr>
+    <td width="250" align="center" valign="top"><img src="assets/demo/walkthrough.gif" width="230" alt="Full walkthrough"></td>
+    <td width="250" align="center" valign="top"><img src="assets/demo/part2.gif" width="230" alt="Browsing the feed"></td>
+    <td width="250" align="center" valign="top"><img src="assets/demo/part3.gif" width="230" alt="Captions and editing"></td>
+  </tr>
+  <tr>
+    <td width="250" align="center"><sub>Launch checklist &rarr; feed &rarr; edit caption &rarr; share flow</sub></td>
+    <td width="250" align="center"><sub>Vertical snap through all three Smart Posts</sub></td>
+    <td width="250" align="center"><sub>Expand caption, full editor, product-store tap</sub></td>
+  </tr>
+</table>
 
 ## How To Run
 
@@ -71,8 +80,11 @@ The codebase is split into small layers that keep responsibilities explicit:
 The implementation follows SOLID principles by keeping UI widgets focused on
 rendering and user input while controller classes own state transitions.
 
-Dependency inversion is handled through the `PostRepository` abstraction, so the
-screen depends on a contract instead of concrete data construction.
+Dependency inversion is handled through the `PostRepository` abstraction. The
+repository is constructed once in `main.dart` and injected into the screens, so
+they depend on a contract rather than building concrete data. Repository reads
+are asynchronous (`Future`-based), mirroring how a real data source would
+behave.
 
 Controllers are plain, testable `ChangeNotifier` state machines. Timing values
 are injectable, and timers live in controllers rather than being buried inside
@@ -122,12 +134,12 @@ flutter test
 
 ## Assumptions And Design Decisions
 
-- Oriflame Sans 2.0 is proprietary, so Satoshi, called out in the design spec,
-  stands in for all text in this build.
-- The ORIFLAME wordmark is rendered as styled text because no logo asset was
-  included in the export.
-- The avatar is an initials placeholder because no avatar asset was included in
-  the export.
+- Oriflame Sans 2.0 is proprietary, so Satoshi, a close free alternative, stands
+  in for all text in this build.
+- The ORIFLAME wordmark is rendered as styled text because no wordmark asset was
+  provided; the brand mark used in the assistant button and share overlay is a
+  self-produced SVG.
+- The feed card avatar is rendered from a bundled image cropped to a circle.
 - Redirect after sharing is simulated with a per-platform splash screen. Meta
   branding is shown only for Instagram, Facebook, and Messenger.
 - No real deep links are opened, matching the assignment guidance for a mocked
@@ -161,7 +173,7 @@ flutter test
 - `AnimatedSize` for the expandable caption card
 - Product overlay that auto-appears after dwell time
 - Platform-specific share chips with business-account treatment
-- Dark launch screen that contrasts with the brighter feed UI
+- System-aware light and dark theming across the app
 - Scrollable expanded caption body so the footer action remains reachable
 
 ## Notable Files
