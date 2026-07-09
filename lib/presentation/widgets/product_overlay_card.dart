@@ -90,7 +90,7 @@ class _ProductOverlayCardState extends State<ProductOverlayCard> {
                 color: const Color.fromRGBO(187, 187, 187, 0.29),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.12),
+                  color: Colors.white.withValues(alpha: 0.12),
                   width: 0.5,
                 ),
               ),
@@ -155,7 +155,7 @@ class _ProductOverlayCardState extends State<ProductOverlayCard> {
                                         style: AppTypography.productOverlayBadge.copyWith(
                                           fontSize: 9,
                                           fontWeight: FontWeight.w400,
-                                          color: AppColors.white.withOpacity(0.9),
+                                          color: AppColors.white.withValues(alpha: 0.9),
                                         ),
                                       ),
                                     ),

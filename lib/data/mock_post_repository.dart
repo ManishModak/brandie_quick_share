@@ -10,7 +10,7 @@ class MockPostRepository implements PostRepository {
   );
 
   static const _product = ProductInfo(
-    name: 'Girodani Gold Lipstick',
+    name: 'Giordani Gold Lipstick',
     price: '\$14.99',
     saleBadge: '30% off',
     subtitle: 'Trending right now and on sale',
@@ -20,7 +20,7 @@ class MockPostRepository implements PostRepository {
   );
 
   static const _productTrending = ProductInfo(
-    name: 'Girodani Gold Lipstick',
+    name: 'Giordani Gold Lipstick',
     price: '\$14.99',
     saleBadge: '30% off',
     subtitle: 'Trending right now and on sale',

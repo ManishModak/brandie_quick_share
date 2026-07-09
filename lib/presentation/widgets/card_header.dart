@@ -28,9 +28,8 @@ class CardHeader extends StatelessWidget {
           child: ClipOval(
             child: Transform(
               alignment: Alignment.center,
-              transform: Matrix4.identity()
-                ..scale(1.5)
-                ..translate(0.0, 2.0),
+              transform: Matrix4.diagonal3Values(1.5, 1.5, 1.0)
+                ..setTranslationRaw(0.0, 3.0, 0.0),
               child: Image.asset(
                 'assets/images/product_lipstick_thumb.png',
                 fit: BoxFit.cover,

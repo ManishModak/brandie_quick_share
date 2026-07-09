@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -79,7 +78,7 @@ class CaptionCard extends StatelessWidget {
                             child: Text(
                               'CAPTION SUGGESTION',
                               style: AppTypography.seeMore.copyWith(
-                                color: AppColors.white.withOpacity(0.9),
+                                color: AppColors.white.withValues(alpha: 0.9),
                                 fontSize: 12,
                                 letterSpacing: 0.5,
                               ),
@@ -114,9 +113,7 @@ class CaptionCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: maxCaptionHeight,
-                  ),
+                  constraints: BoxConstraints(maxHeight: maxCaptionHeight),
                   child: controller.isExpanded
                       ? SingleChildScrollView(
                           child: Column(
@@ -172,7 +169,7 @@ class CaptionCard extends StatelessWidget {
                   Text(
                     referralText,
                     style: AppTypography.body.copyWith(
-                      color: AppColors.white.withOpacity(0.8),
+                      color: AppColors.white.withValues(alpha: 0.8),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
